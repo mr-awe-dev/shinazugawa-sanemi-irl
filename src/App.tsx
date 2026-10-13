@@ -198,6 +198,7 @@ export default function App() {
                   enabled={notifyOn}
                   times={adj ? adj.reminderTimes : null}
                   onToggle={handleNotifyToggle}
+                  onNeedShift={() => setTab('shift')}
                 />
               )}
               <p className="quote">“Lukai dirimu hari ini, agar kau bisa lebih kuat besok.” — Disiplin mengalahkan motivasi.</p>

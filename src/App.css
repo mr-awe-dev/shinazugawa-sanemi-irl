@@ -1073,6 +1073,11 @@ ul li {
   color: var(--text-primary);
 }
 
+.btn-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .btn-ghost {
   border: 1px solid var(--glass-border-soft);
   background: transparent;

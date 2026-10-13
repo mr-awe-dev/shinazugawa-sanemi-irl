@@ -14,6 +14,7 @@ type Props = {
   enabled: boolean
   times: string[] | null
   onToggle: (on: boolean) => void
+  onNeedShift: () => void
 }
 
 function fmtCountdown(ms: number): string {
@@ -31,7 +32,7 @@ const RESULT_MSG: Record<ShowResult, { type: 'ok' | 'err'; msg: string }> = {
   failed: { type: 'err', msg: 'Gagal tampil (browser memblokir). Coba tutup-buka tab, lalu uji lagi.' },
 }
 
-export default function ReminderCard({ enabled, times, onToggle }: Props) {
+export default function ReminderCard({ enabled, times, onToggle, onNeedShift }: Props) {
   const supported = supportNotification()
   const [perm, setPerm] = useState(getPermission())
   const [sw, setSw] = useState<'ready' | 'missing' | 'unsupported' | 'checking'>('checking')
@@ -128,6 +129,13 @@ export default function ReminderCard({ enabled, times, onToggle }: Props) {
         )}
         <button className="btn-ghost" onClick={refresh}><IconClock size={14} /> Perbarui status</button>
       </div>
+
+      {!times && (
+        <p className="warn-text">
+          Tombol nonaktif karena shift hari ini belum diatur — tidak ada jam pengingat yang bisa dijadwalkan.{' '}
+          <button className="link" onClick={onNeedShift}>Atur di tab Shift →</button>
+        </p>
+      )}
 
       {result && (
         <p className={result.type === 'ok' ? 'ok-text' : 'warn-text'} role="status">
