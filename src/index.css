@@ -1,0 +1,124 @@
+/* Fondasi glassmorphism (mobile-first) — token mengikuti SKILL-glassmorphism-ui,
+   palet diselaraskan ke Shinazugawa Sanemi:
+   - Hijau angin (Wind Breathing / Nichirin hijau) sebagai aksen utama
+   - Lavender pucat (mata Sanemi) sebagai aksen sekunder / garis target
+   - Putih rambut sebagai teks utama, scarlet luka sebagai penanda bahaya */
+:root {
+  color-scheme: dark;
+
+  --bg-deep: #0d1412;
+  --glass-tint: rgba(222, 235, 228, 0.13);
+  --glass-tint-dark: rgba(18, 28, 24, 0.52);
+  --glass-border: rgba(255, 255, 255, 0.22);
+  --glass-border-soft: rgba(255, 255, 255, 0.14);
+  --glass-highlight: rgba(255, 255, 255, 0.28);
+  --text-primary: #f4f7f5;
+  --text-secondary: rgba(240, 247, 243, 0.72);
+  --text-faint: rgba(240, 247, 243, 0.55);
+  --accent: #4fe3a5;
+  --accent-soft: rgba(79, 227, 165, 0.2);
+  --accent2: #b79cff;
+  --accent2-soft: rgba(183, 156, 255, 0.2);
+  --success: #4fe3a5;
+  --success-soft: rgba(79, 227, 165, 0.18);
+  --warning: #fbbf24;
+  --warning-soft: rgba(251, 191, 36, 0.16);
+  --danger: #ff6b6b;
+  --danger-soft: rgba(255, 107, 107, 0.16);
+  --violet: #b79cff;
+  --violet-soft: rgba(183, 156, 255, 0.18);
+
+  --radius-card: 18px;
+  --radius-panel: 28px;
+  --shadow-glass: 0 20px 60px rgba(2, 8, 6, 0.4);
+
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Inter", sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Consolas, monospace;
+
+  font-family: var(--sans);
+  line-height: 1.5;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100svh;
+  color: var(--text-primary);
+  background:
+    radial-gradient(900px 500px at 85% -5%, rgba(79, 227, 165, 0.14), transparent 60%),
+    radial-gradient(760px 520px at -10% 30%, rgba(183, 156, 255, 0.12), transparent 60%),
+    radial-gradient(700px 600px at 50% 110%, rgba(255, 107, 107, 0.06), transparent 60%),
+    linear-gradient(135deg, #182420 0%, #0d1412 55%, #080d0b 100%);
+  background-color: var(--bg-deep);
+  background-attachment: fixed;
+}
+
+#root {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+h1 {
+  font-size: 1.375rem; /* 22px mobile-first */
+}
+
+p {
+  margin: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  min-height: 44px; /* target sentuh nyaman */
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+::selection {
+  background: var(--accent-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

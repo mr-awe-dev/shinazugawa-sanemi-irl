@@ -1,0 +1,19 @@
+{
+  "name": "Sanemi IRL Tracker",
+  "short_name": "Sanemi",
+  "description": "Pelacak progres harian ala Wind Hashira — checklist, shift kerja, grafik, rekap.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0d1412",
+  "theme_color": "#0d1412",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

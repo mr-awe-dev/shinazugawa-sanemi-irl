@@ -1,0 +1,1242 @@
+/* Sistem kaca Sanemi Tracker — mobile-first.
+   Panel utama blur kuat; kartu sekunder blur ringan (hemat performa di mobile). */
+
+/* ---------- Scene & shell ---------- */
+.app-scene {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 12px 96px; /* ruang dock bawah di mobile */
+}
+
+.app-shell {
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 16px;
+  border-radius: 22px;
+  border: 1px solid var(--glass-border);
+  background: linear-gradient(
+    135deg,
+    rgba(242, 248, 255, 0.13),
+    rgba(183, 202, 224, 0.06) 48%,
+    rgba(19, 30, 44, 0.22)
+  );
+  box-shadow: var(--shadow-glass);
+  -webkit-backdrop-filter: blur(16px) saturate(125%);
+  backdrop-filter: blur(16px) saturate(125%);
+}
+
+/* ---------- Brand ---------- */
+.topbar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 2px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: 14px;
+  color: #06281c;
+  background: linear-gradient(135deg, #ffffff, var(--accent));
+  box-shadow: 0 6px 20px rgba(79, 227, 165, 0.35);
+}
+
+.brand h1 {
+  font-size: 1.125rem;
+}
+
+.brand-sub {
+  margin-top: 2px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+/* ---------- Navigasi: segmented (desktop) & dock (mobile) ---------- */
+.seg-tabs {
+  display: none; /* mobile pakai dock bawah */
+}
+
+.dock {
+  position: fixed;
+  inset: auto 12px 12px;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  padding: 8px;
+  border-radius: 20px;
+  border: 1px solid var(--glass-border);
+  background: rgba(14, 22, 18, 0.72);
+  box-shadow: 0 12px 40px rgba(2, 10, 7, 0.45);
+  -webkit-backdrop-filter: blur(20px) saturate(130%);
+  backdrop-filter: blur(20px) saturate(130%);
+}
+
+.dock-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  min-height: 56px;
+  justify-content: center;
+  padding: 4px 2px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.dock-btn.active {
+  color: var(--text-primary);
+}
+
+/* ---------- Datebar: mobile 2 baris (label penuh di atas, tombol 3 kolom),
+   tablet/desktop 1 baris. Tidak ada scroll horizontal yang kepotong. ---------- */
+.datebar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 14px 0;
+}
+
+.datebar strong {
+  flex: 1 1 100%;
+  order: -1;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+}
+
+.datebar button {
+  flex: 1 1 0;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 8px 6px;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border-soft);
+  background: var(--glass-tint);
+  color: var(--text-primary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.datebar button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Label ringkas khusus layar kecil */
+.lbl-short {
+  display: none;
+}
+
+@media (max-width: 639px) {
+  .lbl-full {
+    display: none;
+  }
+
+  .lbl-short {
+    display: inline;
+  }
+}
+
+@media (min-width: 640px) {
+  .datebar {
+    flex-wrap: nowrap;
+  }
+
+  .datebar strong {
+    flex: 0 1 auto;
+    order: 0;
+    text-align: left;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+  }
+
+  .datebar button {
+    flex: none;
+    padding: 8px 14px;
+    font-size: 0.82rem;
+  }
+}
+
+/* ---------- Teks & status ---------- */
+.muted {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin: 4px 0 10px;
+}
+
+.locked,
+.nudge {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: 14px;
+  font-size: 0.85rem;
+  margin: 0 0 12px;
+}
+
+.locked {
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  background: var(--warning-soft);
+  color: #fde9c0;
+}
+
+.nudge {
+  border: 1px solid rgba(79, 227, 165, 0.5);
+  background: var(--accent-soft);
+  color: #d9f7e8;
+}
+
+.locked svg,
+.nudge svg {
+  flex: none;
+  margin-top: 2px;
+}
+
+/* ---------- Progress ---------- */
+.progress-wrap {
+  margin: 4px 0 14px;
+  padding: 14px 16px;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--glass-border-soft);
+  background: var(--glass-tint-dark);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.progress-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.progress-top strong {
+  font-size: 1.05rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.grade {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  color: var(--text-primary);
+  background: var(--accent-soft);
+  border: 1px solid rgba(79, 227, 165, 0.55);
+}
+
+.progress-bar {
+  height: 12px;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--glass-border-soft);
+  background: rgba(2, 10, 7, 0.45);
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), var(--success));
+  box-shadow: 0 0 12px rgba(79, 227, 165, 0.6);
+  /* width dianimasikan Motion (spring) — tanpa transisi CSS agar tidak ganda */
+}
+
+/* ---------- Grid & kartu kaca ---------- */
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+  padding: 14px;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--glass-border-soft);
+  background: var(--glass-tint);
+  box-shadow: 0 10px 32px rgba(2, 10, 7, 0.18);
+  -webkit-backdrop-filter: blur(12px) saturate(120%);
+  backdrop-filter: blur(12px) saturate(120%);
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--glass-highlight), transparent);
+  pointer-events: none;
+}
+
+.card.done {
+  border-color: rgba(52, 211, 153, 0.55);
+  box-shadow: 0 10px 32px rgba(2, 10, 7, 0.18), 0 0 0 1px rgba(52, 211, 153, 0.15);
+}
+
+.card.today {
+  border-color: rgba(79, 227, 165, 0.6);
+}
+
+.card.rest {
+  opacity: 0.92;
+}
+
+.card.wide {
+  grid-column: 1 / -1;
+}
+
+/* Kartu kaca yang berdiri di luar .grid (butuh gap manual 12px yang sama) */
+.card.spaced {
+  margin-top: 12px;
+}
+
+.card.clickable {
+  width: 100%;
+  text-align: left;
+}
+
+button.card.clickable {
+  color: var(--text-primary);
+}
+
+.card-head {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.field-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border-radius: 12px;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1px solid rgba(79, 227, 165, 0.35);
+}
+
+.card.done .field-icon {
+  color: var(--success);
+  background: var(--success-soft);
+  border-color: rgba(52, 211, 153, 0.4);
+}
+
+.card-title {
+  font-weight: 650;
+  font-size: 0.95rem;
+}
+
+.card-target {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.status-dot {
+  margin-left: auto;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border-soft);
+  color: transparent;
+}
+
+.card.done .status-dot {
+  color: #052e22;
+  background: var(--success);
+  border-color: var(--success);
+}
+
+/* ---------- Form dalam kaca ---------- */
+.card-input {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.card-input input,
+.measure input,
+.text,
+.shift-row select {
+  min-height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border-soft);
+  background: rgba(2, 10, 7, 0.45);
+  color: var(--text-primary);
+  padding: 8px 12px;
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.card-input input {
+  width: 120px;
+}
+
+.card-input input:disabled,
+.measure input:disabled,
+.text:disabled {
+  opacity: 0.55;
+}
+
+.unit {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin: 8px 0;
+  min-height: 44px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.row input[type="checkbox"] {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  accent-color: var(--accent);
+}
+
+.text {
+  width: 100%;
+  resize: vertical;
+  margin-top: 6px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.measure {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.measure label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.measure input {
+  width: 100%;
+}
+
+select option {
+  background: #14201b;
+  color: #f4f7f5;
+}
+
+/* ---------- Badge, chip, bar mini ---------- */
+.badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #06281c;
+  background: var(--accent);
+  padding: 3px 8px;
+  border-radius: 999px;
+  margin-left: 8px;
+  white-space: nowrap;
+}
+
+.mini-bar {
+  height: 8px;
+  background: rgba(2, 10, 7, 0.45);
+  border: 1px solid var(--glass-border-soft);
+  border-radius: 999px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.mini-bar > div {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--success));
+}
+
+.shift-chip {
+  font-size: 0.68rem;
+  font-weight: 800;
+  background: var(--accent-soft);
+  border: 1px solid rgba(79, 227, 165, 0.55);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+/* ---------- Banner shift ---------- */
+.shift-banner {
+  border: 1px solid var(--glass-border-soft);
+  border-left-width: 5px;
+  border-radius: var(--radius-card);
+  padding: 12px 14px;
+  margin: 0 0 12px;
+  background: var(--glass-tint-dark);
+  font-size: 0.88rem;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.shift-banner strong {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.shift-banner.mode-utama {
+  border-left-color: var(--danger);
+}
+
+.shift-banner.mode-normal {
+  border-left-color: var(--accent);
+}
+
+.shift-banner.mode-ringan {
+  border-left-color: var(--violet);
+}
+
+.shift-empty {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0 0 12px;
+}
+
+.link {
+  background: none;
+  border: none;
+  min-height: 0;
+  padding: 0;
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.quote {
+  margin-top: 16px;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+ul {
+  margin: 8px 0;
+  padding-left: 20px;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+ul li {
+  margin-bottom: 4px;
+}
+
+/* ---------- Tab Shift ---------- */
+.shift-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.shift-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.shift-date {
+  background: none;
+  border: none;
+  min-height: 44px;
+  padding: 0;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  min-width: 118px;
+  color: var(--text-primary);
+}
+
+.shift-date strong {
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.shift-date .muted {
+  margin: 0;
+  font-size: 0.75rem;
+}
+
+.shift-row select {
+  flex: 1;
+  min-width: 170px;
+  font-size: 0.85rem;
+}
+
+.shift-adj {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+  flex-basis: 100%;
+}
+
+.shift-adj span,
+.shift-banner .muted {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mode {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+
+.mode-utama {
+  color: #ffd7d7;
+  background: var(--danger-soft);
+  border-color: rgba(248, 113, 113, 0.5);
+}
+
+.mode-normal {
+  color: #d9f7e8;
+  background: var(--accent-soft);
+  border-color: rgba(79, 227, 165, 0.5);
+}
+
+.mode-ringan {
+  color: #e2d9ff;
+  background: var(--violet-soft);
+  border-color: rgba(167, 139, 250, 0.5);
+}
+
+.legend {
+  margin-top: 4px;
+}
+
+/* ---------- Grafik perkembangan ---------- */
+.charts-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.charts-head .muted {
+  flex: 1 1 220px;
+  margin: 0;
+}
+
+.range-seg {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 14px;
+  border: 1px solid var(--glass-border-soft);
+  background: rgba(2, 10, 7, 0.4);
+}
+
+.range-seg button {
+  min-height: 40px;
+  padding: 6px 14px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 650;
+}
+
+.range-seg button.active {
+  color: var(--text-primary);
+  background: var(--accent-soft);
+  border-color: rgba(79, 227, 165, 0.55);
+}
+
+.compare-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.metric-card {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.metric-value {
+  font-size: 1.25rem;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+
+.delta {
+  display: inline-block;
+  margin-top: 2px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.delta.up {
+  color: var(--success);
+}
+
+.delta.down {
+  color: var(--danger);
+}
+
+.delta.neutral {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+.spark {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.spark-x,
+.spark-y {
+  fill: var(--text-faint);
+  font-size: 9px;
+  font-variant-numeric: tabular-nums;
+}
+
+.chart-empty {
+  padding: 20px 12px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  border: 1px dashed var(--glass-border-soft);
+  border-radius: 12px;
+}
+
+.bars {
+  display: flex;
+  gap: 5px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scrollbar-width: thin;
+}
+
+.bar-col {
+  flex: 1 0 0;
+  min-width: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.bar-track {
+  position: relative;
+  width: 100%;
+  height: 120px;
+  border-radius: 6px;
+  border: 1px solid var(--glass-border-soft);
+  background: rgba(2, 10, 7, 0.45);
+  overflow: hidden;
+}
+
+.bar-fill {
+  position: absolute;
+  inset: auto 0 0;
+  border-radius: 5px;
+}
+
+.bar-fill.good {
+  background: linear-gradient(180deg, #8ff5c6, var(--accent));
+}
+
+.bar-fill.mid {
+  background: linear-gradient(180deg, #d3c2ff, var(--accent2));
+}
+
+.bar-fill.low {
+  background: linear-gradient(180deg, #ffa3a3, var(--danger));
+}
+
+.bar-fill.empty {
+  background: transparent;
+}
+
+.bar-x {
+  font-size: 0.6rem;
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.cols-30 .bar-col {
+  min-width: 13px;
+}
+
+.cols-30 .bar-x {
+  display: none;
+}
+
+.cols-30 .bar-col:nth-child(5n + 1) .bar-x {
+  display: block;
+}
+
+/* ---------- Pill navigasi aktif (digerakkan Motion via layoutId) ---------- */
+.seg-tabs button,
+.dock-btn {
+  position: relative;
+  isolation: isolate;
+}
+
+.pill {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background: var(--accent-soft);
+  border: 1px solid rgba(79, 227, 165, 0.55);
+  pointer-events: none;
+}
+
+.seg-tabs button svg,
+.seg-tabs button .nav-label,
+.dock-btn svg,
+.dock-btn .nav-label {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- Tumpukan rekap (tab Riwayat) ---------- */
+.recap-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.recap-line {
+  font-size: 0.88rem;
+  margin: 0 0 8px;
+}
+
+/* ---------- Kalender riwayat ---------- */
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+  margin: 10px 0 4px;
+}
+
+.cal-dow {
+  text-align: center;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  padding: 4px 0;
+}
+
+.cal-blank {
+  min-height: 52px;
+}
+
+.cal-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  min-height: 52px;
+  padding: 5px 2px;
+  border-radius: 10px;
+  border: 1px solid var(--glass-border-soft);
+  background: rgba(2, 10, 7, 0.3);
+  color: var(--text-primary);
+}
+
+.cal-cell:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.cal-cell.filled {
+  border-color: rgba(79, 227, 165, 0.45);
+  background: var(--accent-soft);
+}
+
+.cal-cell.today {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.day-num {
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.cal-bar {
+  width: 80%;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+
+.cal-bar > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+}
+
+.cal-marks {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  min-height: 12px;
+}
+
+.cal-shift {
+  font-size: 0.58rem;
+  font-weight: 800;
+  background: rgba(183, 156, 255, 0.25);
+  border: 1px solid rgba(183, 156, 255, 0.5);
+  padding: 0 4px;
+  border-radius: 999px;
+}
+
+.cal-note {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--warning);
+}
+
+/* ---------- Search riwayat ---------- */
+.search-wrap {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hist-results {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.hist-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border-soft);
+  background: var(--glass-tint-dark);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+}
+
+.hist-item .muted {
+  margin: 0;
+}
+
+.hist-note {
+  font-style: italic;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+}
+
+/* ---------- Bar per-task rekap mingguan ---------- */
+.task-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 4px 0 8px;
+}
+
+.task-bar-row {
+  display: grid;
+  grid-template-columns: 96px 1fr 44px;
+  gap: 8px;
+  align-items: center;
+  font-size: 0.78rem;
+}
+
+.task-bar-label {
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mini-bar.task-bar {
+  margin-top: 0;
+}
+
+.task-bar-val {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+}
+
+/* ---------- Backup ---------- */
+.backup-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 4px 0 8px;
+}
+
+.btn-primary,
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 650;
+}
+
+.btn-primary {
+  border: 1px solid rgba(79, 227, 165, 0.6);
+  background: var(--accent-soft);
+  color: var(--text-primary);
+}
+
+.btn-ghost {
+  border: 1px solid var(--glass-border-soft);
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.btn-ghost:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.restore-preview {
+  margin: 8px 0;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px dashed rgba(251, 191, 36, 0.55);
+  background: var(--warning-soft);
+  font-size: 0.85rem;
+}
+
+.restore-preview p {
+  margin-bottom: 6px;
+}
+
+.warn-text {
+  color: #fde9c0;
+  font-size: 0.85rem;
+  font-weight: 650;
+}
+
+.ok-text {
+  color: var(--success);
+  font-size: 0.85rem;
+  font-weight: 650;
+}
+
+/* ---------- Diagnosa pengingat ---------- */
+.diag-list {
+  margin: 4px 0 8px;
+  padding: 10px 12px 10px 30px;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border-soft);
+  background: rgba(2, 10, 7, 0.35);
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.diag-list li {
+  margin-bottom: 3px;
+}
+
+.diag-list strong {
+  color: var(--text-primary);
+}
+
+@media (min-width: 640px) {
+  .compare-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  .compare-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .charts-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ---------- Tablet (≥640px) ---------- */
+@media (min-width: 640px) {
+  .app-scene {
+    padding: 20px 20px 48px;
+  }
+
+  .app-shell {
+    padding: 24px;
+  }
+
+  .brand h1 {
+    font-size: 1.4rem;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .shift-adj {
+    flex-basis: auto;
+    margin-left: auto;
+  }
+}
+
+/* ---------- Desktop (≥900px): segmented nav, tanpa dock ---------- */
+@media (min-width: 900px) {
+  .app-scene {
+    padding-bottom: 32px;
+  }
+
+  .app-shell {
+    border-radius: var(--radius-panel);
+    -webkit-backdrop-filter: blur(24px) saturate(135%);
+    backdrop-filter: blur(24px) saturate(135%);
+  }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .seg-tabs {
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 16px;
+    border: 1px solid var(--glass-border-soft);
+    background: rgba(2, 10, 7, 0.4);
+  }
+
+  .seg-tabs button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 8px 16px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 650;
+  }
+
+  .seg-tabs button.active {
+    color: var(--text-primary);
+  }
+
+  .dock {
+    display: none;
+  }
+
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .card {
+    -webkit-backdrop-filter: blur(18px) saturate(125%);
+    backdrop-filter: blur(18px) saturate(125%);
+  }
+}
+
+/* ---------- Fallback tanpa backdrop-filter ---------- */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .app-shell {
+    background: rgba(22, 32, 45, 0.96);
+  }
+
+  .card,
+  .progress-wrap,
+  .shift-banner {
+    background: rgba(30, 42, 58, 0.97);
+  }
+
+  .dock {
+    background: rgba(14, 22, 18, 0.97);
+  }
+}
