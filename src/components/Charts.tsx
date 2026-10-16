@@ -92,28 +92,26 @@ function Sparkline({
       <title>{label} — {defined}/{n} hari terisi</title>
       {[0.25, 0.5, 0.75].map((f) => (
         <line key={f} x1={PL} x2={W - PR} y1={PT + plotH * f} y2={PT + plotH * f}
-          stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+          className="chart-grid-line" />
       ))}
       <rect x={PL} y={yBand1} width={plotW} height={Math.max(2, yBand0 - yBand1)}
-        fill="rgba(183,156,255,0.14)" />
-      <line x1={PL} x2={W - PR} y1={yBand0} y2={yBand0}
-        stroke="#b79cff" strokeWidth="1.2" strokeDasharray="5 4" />
+        className="chart-band" />
+      <line x1={PL} x2={W - PR} y1={yBand0} y2={yBand0} className="chart-band-line" />
       {segments.map((d, i) => (
-        <motion.path key={i} d={d} fill="none" stroke="#4fe3a5" strokeWidth="2.2"
-          strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke"
+        <motion.path key={i} d={d} className="chart-line"
+          vectorEffect="non-scaling-stroke"
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
           transition={{ duration: 0.9, ease: 'easeOut' }} />
       ))}
       {segments.length > 0 && (
         <motion.path d={`${segments.join(' ')}L${x(n - 1).toFixed(1)},${(PT + plotH).toFixed(1)}L${x(0).toFixed(1)},${(PT + plotH).toFixed(1)}Z`}
-          fill="rgba(79,227,165,0.10)" stroke="none"
+          className="chart-area"
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.9, delay: 0.3 }} />
       )}
       {values.map((v, i) =>
         v === undefined ? null : (
-          <circle key={i} cx={x(i)} cy={y(v)} r={n > 10 ? 2 : 3.2}
-            fill="#4fe3a5" stroke="#06281c" strokeWidth="1.2">
+          <circle key={i} cx={x(i)} cy={y(v)} r={n > 10 ? 2 : 3.2} className="chart-dot">
             <title>{shortDate(keys[i])}: {decimals === 0 ? fmtID(Math.round(v)) : v.toFixed(decimals)}</title>
           </circle>
         ),

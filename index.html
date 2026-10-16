@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="id">
+<html lang="id" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
@@ -9,7 +9,30 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="theme-color" content="#0d1412" />
+    <meta name="theme-color" content="#ebedf3" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    />
+    <script>
+      // Terapkan tema sebelum paint pertama supaya tidak ada kedipan warna.
+      // Mode "system" ikut prefers-color-scheme OS; nilai ini yang dibaca ulang
+      // oleh src/lib/theme.ts saat app mount.
+      ;(function () {
+        try {
+          var saved = localStorage.getItem('sanemi-theme-v1')
+          var mode = saved === 'light' || saved === 'dark' || saved === 'system' ? saved : 'system'
+          var dark =
+            mode === 'dark' ||
+            (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+          document.documentElement.dataset.theme = dark ? 'dark' : 'light'
+        } catch (e) {
+          document.documentElement.dataset.theme = 'light'
+        }
+      })()
+    </script>
     <title>Sanemi IRL Tracker</title>
   </head>
   <body>

@@ -7,6 +7,7 @@ import ReminderCard from './components/ReminderCard'
 import Checklist from './components/Checklist'
 import ProgressBar from './components/ProgressBar'
 import ShiftTab from './components/ShiftTab'
+import ThemeToggle from './components/ThemeToggle'
 import WorkoutTab from './components/WorkoutTab'
 import {
   IconBell,
@@ -32,6 +33,16 @@ import { fireReminder, loadNotifyPref, msUntil, saveNotifyPref } from './lib/not
 import { getLog, loadAll, saveAll } from './lib/store'
 import { getProgress } from './lib/stats'
 import { loadMeta, saveMeta, type MonthMeta } from './lib/meta'
+import {
+  applyTheme,
+  loadThemeMode,
+  prefersDark,
+  resolveTheme,
+  saveThemeMode,
+  watchSystemTheme,
+  type ResolvedTheme,
+  type ThemeMode,
+} from './lib/theme'
 import type { BackupFile } from './lib/backup'
 
 type Tab = 'hari' | 'latihan' | 'shift' | 'grafik' | 'riwayat'
@@ -51,6 +62,22 @@ export default function App() {
   const [notifyOn, setNotifyOn] = useState<boolean>(() => loadNotifyPref())
   const [dateKey, setDateKey] = useState(todayKey())
   const [tab, setTab] = useState<Tab>('hari')
+  const [themeMode, setThemeMode] = useState<ThemeMode>(() => loadThemeMode())
+  const [systemDark, setSystemDark] = useState(prefersDark)
+
+  // Mode "system" mengikuti preferensi OS selama aplikasi terbuka.
+  useEffect(() => watchSystemTheme(setSystemDark), [])
+
+  const theme: ResolvedTheme = resolveTheme(themeMode, systemDark)
+
+  useEffect(() => {
+    applyTheme(theme)
+  }, [theme])
+
+  const handleTheme = (mode: ThemeMode) => {
+    setThemeMode(mode)
+    saveThemeMode(mode)
+  }
 
   useEffect(() => {
     saveAll(all)
@@ -136,15 +163,18 @@ export default function App() {
               <p className="brand-sub">Pernapasan Konsentrasi Penuh — Rutinitas Harian</p>
             </div>
           </div>
-          <nav className="seg-tabs" aria-label="Navigasi utama">
-            {TABS.map(({ id, label, icon: Icon }) => (
-              <button key={id} className={tab === id ? 'active' : ''} onClick={() => setTab(id)}
-                aria-current={tab === id ? 'page' : undefined}>
-                {tab === id && <NavPill id="seg-pill" />}
-                <Icon size={16} /> <span className="nav-label">{label}</span>
-              </button>
-            ))}
-          </nav>
+          <div className="topbar-tools">
+            <ThemeToggle mode={themeMode} onChange={handleTheme} />
+            <nav className="seg-tabs" aria-label="Navigasi utama">
+              {TABS.map(({ id, label, icon: Icon }) => (
+                <button key={id} className={tab === id ? 'active' : ''} onClick={() => setTab(id)}
+                  aria-current={tab === id ? 'page' : undefined}>
+                  {tab === id && <NavPill id="seg-pill" />}
+                  <Icon size={16} /> <span className="nav-label">{label}</span>
+                </button>
+              ))}
+            </nav>
+          </div>
         </header>
 
         {tab !== 'shift' && (

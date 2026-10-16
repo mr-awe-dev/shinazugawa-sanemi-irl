@@ -1,45 +1,117 @@
-/* Fondasi glassmorphism (mobile-first) — token mengikuti SKILL-glassmorphism-ui,
-   palet diselaraskan ke Shinazugawa Sanemi:
-   - Hijau angin (Wind Breathing / Nichirin hijau) sebagai aksen utama
-   - Lavender pucat (mata Sanemi) sebagai aksen sekunder / garis target
-   - Putih rambut sebagai teks utama, scarlet luka sebagai penanda bahaya */
+/* Fondasi neumorphism (mobile-first) — token mengikuti neumorphism-skill.md.
+   Palet asli Sanemi dipertahankan:
+   - Hijau angin (Wind Breathing) = aksen utama
+   - Lavender (mata Sanemi) = aksen sekunder / garis target
+   - Merah luka = penanda bahaya (khas, bukan aksen dekoratif)
+   Mode tampilan: <html data-theme="light|dark">. Pilihan "system" diresolve di
+   src/lib/theme.ts, jadi blok token cukup dua (tiga) — tidak ada media query duplikat. */
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 
-  --bg-deep: #0d1412;
-  --glass-tint: rgba(222, 235, 228, 0.13);
-  --glass-tint-dark: rgba(18, 28, 24, 0.52);
-  --glass-border: rgba(255, 255, 255, 0.22);
-  --glass-border-soft: rgba(255, 255, 255, 0.14);
-  --glass-highlight: rgba(255, 255, 255, 0.28);
-  --text-primary: #f4f7f5;
-  --text-secondary: rgba(240, 247, 243, 0.72);
-  --text-faint: rgba(240, 247, 243, 0.55);
-  --accent: #4fe3a5;
-  --accent-soft: rgba(79, 227, 165, 0.2);
-  --accent2: #b79cff;
-  --accent2-soft: rgba(183, 156, 255, 0.2);
-  --success: #4fe3a5;
-  --success-soft: rgba(79, 227, 165, 0.18);
-  --warning: #fbbf24;
-  --warning-soft: rgba(251, 191, 36, 0.16);
-  --danger: #ff6b6b;
-  --danger-soft: rgba(255, 107, 107, 0.16);
-  --violet: #b79cff;
-  --violet-soft: rgba(183, 156, 255, 0.18);
+  /* Permukaan — satu warna, kedalaman hanya dari bayangan ganda */
+  --surface: #ebedf3;
+  --surface-raised: #f4f6fb;
+  --surface-sunken: #dee2ec;
 
-  --radius-card: 18px;
-  --radius-panel: 28px;
-  --shadow-glass: 0 20px 60px rgba(2, 8, 6, 0.4);
+  /* Bayangan: terang kiri-atas, gelap kanan-bawah (tidak pernah dibalik) */
+  --sd: #c3c7d6;
+  --sl: #ffffff;
 
-  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Inter", sans-serif;
+  /* Teks */
+  --text-strong: #434a5c;
+  --text: #343a4a;
+  --muted: #5c6478;
+  --muted-2: #868ea0;
+
+  /* Aksen utama — hijau angin */
+  --accent: #12a176;
+  --accent-bright: #4fe3a5;
+  --accent-deep: #0a7a58;
+  /* Aksen pekat untuk bidang solid (badge, status-dot, bar isi) supaya
+     teks --accent-ink di atasnya tetap ≥ 4.5:1 */
+  --accent-solid: #0a7a58;
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(18, 161, 118, 0.16);
+  --accent-glow: rgba(18, 161, 118, 0.32);
+
+  /* Aksen sekunder — lavender Sanemi */
+  --accent2: #7c5cd6;
+  --accent2-soft: rgba(124, 92, 214, 0.14);
+
+  /* Status */
+  --success: #12a176;
+  --warning: #a86c05;
+  --warning-soft: rgba(214, 155, 42, 0.2);
+  --danger: #c2412f;
+  --danger-soft: rgba(194, 65, 47, 0.16);
+
+  /* Garis tipis (hanya navbar & kotak pilihan) */
+  --outline: rgba(110, 118, 140, 0.26);
+  --divider: #d2d7e4;
+
+  /* Resep bayangan */
+  --sh-xs: 2px 2px 5px var(--sd), -2px -2px 5px var(--sl);
+  --sh-sm: 4px 4px 9px var(--sd), -4px -4px 9px var(--sl);
+  --sh-md: 7px 7px 16px var(--sd), -7px -7px 16px var(--sl);
+  --sh-lg: 12px 12px 26px var(--sd), -12px -12px 26px var(--sl);
+  --in-xs: inset 2px 2px 4px var(--sd), inset -2px -2px 4px var(--sl);
+  --in-sm: inset 3px 3px 6px var(--sd), inset -3px -3px 6px var(--sl);
+  --in-md: inset 6px 6px 12px var(--sd), inset -6px -6px 12px var(--sl);
+
+  /* Radius — sudut tumpul, tidak pernah tajam */
+  --r-card: 20px;
+  --r-panel: 28px;
+  --r-tile: 16px;
+  --r-box: 14px;
+  --r-sm: 10px;
+  --r-pill: 999px;
+
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --mono: ui-monospace, SFMono-Regular, Consolas, monospace;
 
-  font-family: var(--sans);
+  font-family: var(--font);
   line-height: 1.5;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Mode gelap: permukaan tetap satu warna, bayangan gelap makin dalam,
+   bayangan terang jadi abu-abu kebiruan (bukan putih murni). */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --surface: #252d30;
+  --surface-raised: #2c3539;
+  --surface-sunken: #1f2629;
+
+  --sd: #171d1f;
+  --sl: #3b464a;
+
+  --text-strong: #edf3f0;
+  --text: #dbe5e1;
+  --muted: #a6b5b0;
+  --muted-2: #788884;
+
+  --accent: #4fe3a5;
+  --accent-bright: #7cf0c0;
+  --accent-deep: #2fbe8a;
+  --accent-solid: #4fe3a5;
+  --accent-ink: #06301f;
+  --accent-soft: rgba(79, 227, 165, 0.16);
+  --accent-glow: rgba(79, 227, 165, 0.34);
+
+  --accent2: #b79cff;
+  --accent2-soft: rgba(183, 156, 255, 0.18);
+
+  --success: #4fe3a5;
+  --warning: #f0b849;
+  --warning-soft: rgba(240, 184, 73, 0.16);
+  --danger: #ff8074;
+  --danger-soft: rgba(255, 128, 116, 0.16);
+
+  --outline: rgba(200, 214, 230, 0.22);
+  --divider: #3a4448;
 }
 
 *,
@@ -56,14 +128,8 @@ body {
   margin: 0;
   min-height: 100vh;
   min-height: 100svh;
-  color: var(--text-primary);
-  background:
-    radial-gradient(900px 500px at 85% -5%, rgba(79, 227, 165, 0.14), transparent 60%),
-    radial-gradient(760px 520px at -10% 30%, rgba(183, 156, 255, 0.12), transparent 60%),
-    radial-gradient(700px 600px at 50% 110%, rgba(255, 107, 107, 0.06), transparent 60%),
-    linear-gradient(135deg, #182420 0%, #0d1412 55%, #080d0b 100%);
-  background-color: var(--bg-deep);
-  background-attachment: fixed;
+  color: var(--text-strong);
+  background-color: var(--surface);
 }
 
 #root {
@@ -100,12 +166,13 @@ textarea {
 button {
   cursor: pointer;
   min-height: 44px; /* target sentuh nyaman */
+  transition: box-shadow 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
 }
 
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
-  border-radius: 6px;
+  border-radius: var(--r-sm);
 }
 
 ::selection {
