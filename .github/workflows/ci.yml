@@ -1,0 +1,47 @@
+name: CI
+
+# Jalankan saat ada push ke main dan setiap PR yang menyentuh main.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Batalkan run lama kalau branch yang sama dapat push baru — menghemat menit CI.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Lint, typecheck, build, test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Node 22 memenuhi dua syarat engine sekaligus:
+      #   vite 8 butuh 22.12+, vitest 4 butuh ^22.0.0
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # npm ci (bukan npm install) agar ikut mengunci versi persis di package-lock.
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      # build = `tsc -b && vite build`, jadi typecheck ikut ter-cover di sini.
+      - name: Typecheck and build
+        run: npm run build
+
+      - name: Unit tests
+        run: npm test
