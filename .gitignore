@@ -25,3 +25,6 @@ dist-ssr
 
 # graphify knowledge graph
 graphify-out/
+
+# Laporan audit Lighthouse (artifact, ±1.1 MB, isinya berubah tiap audit)
+lighthouse/
