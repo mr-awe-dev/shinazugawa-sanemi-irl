@@ -19,31 +19,6 @@ export type DailyLog = {
   catatan?: string
 }
 
-export type TaskType = 'number' | 'check'
-
-export type TaskDef = {
-  id: keyof DailyLog | 'defisit_note'
-  label: string
-  target: string
-  hint: string
-  type: TaskType
-  min?: number
-  max?: number
-  step?: number
-}
-
-// 8 item sesuai Database Notion (Tanggal, Protein, Air, Langkah, Tidur, Latihan, Postur, Makanan, Catatan)
-export const TASK_MASTER: TaskDef[] = [
-  { id: 'protein_g', label: 'Ransum Hashira (Protein)', target: '140–160 g', hint: 'Ayam, telur, tempe, ikan, whey', type: 'number', min: 0, max: 300, step: 5 },
-  { id: 'air_L', label: 'Hidrasi Total Concentration', target: '3–4 L', hint: 'Air putih saja', type: 'number', min: 0, max: 10, step: 0.25 },
-  { id: 'langkah', label: 'NEAT (Jalan Kaki)', target: '8.000–10.000', hint: 'Cara utama bakar lemak tanpa lelah', type: 'number', min: 0, max: 50000, step: 500 },
-  { id: 'tidur_jam', label: 'Tidur Pemulihan', target: '7–8 jam', hint: 'Otot tumbuh saat tidur', type: 'number', min: 0, max: 24, step: 0.5 },
-  { id: 'latihan_done', label: 'Sesi Latihan', target: 'sesuai jadwal', hint: 'Cek tab Latihan per hari', type: 'check' },
-  { id: 'postur_done', label: 'Postur Sanemi', target: 'dada busung, bahu ke belakang', hint: 'Sadar postur sepanjang hari', type: 'check' },
-  { id: 'makanan_clean', label: 'Makan Bersih', target: 'defisit 300–500 kkal', hint: 'Whole foods, hindari gula/olahan', type: 'check' },
-  { id: 'catatan', label: 'Catatan / Refleksi', target: 'bebas', hint: '"Lukai dirimu hari ini..."', type: 'check' },
-]
-
 export type WorkoutDay = { title: string; items: string[]; rest?: boolean }
 
 // Jadwal dari Notion MD: 4-5 hari latihan + 2 hari istirahat. key = JS getDay() (0=Minggu)

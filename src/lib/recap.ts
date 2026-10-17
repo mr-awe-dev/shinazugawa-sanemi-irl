@@ -1,18 +1,22 @@
-import { addDays, isRestDay, taskDone, toDateKey, type DailyLog } from './schema'
+import {
+  SCORED_TASK_IDS,
+  addDays,
+  isRestDay,
+  taskDone,
+  toDateKey,
+  type DailyLog,
+} from './schema'
 import { getProgress } from './stats'
 
 // Logika rekap mingguan (Senin–Minggu) & bulanan.
 // Semua rata-rata hanya memakai hari yang terisi (jujur, bukan nol).
 
-export const HABIT_IDS = [
-  'protein_g',
-  'air_L',
-  'langkah',
-  'tidur_jam',
-  'latihan_done',
-  'postur_done',
-  'makanan_clean',
-] as const
+/** Habit mingguan = task skor harian, jadi weekStat.pct dan monthStat.avgPct
+ *  memakai denominator yang sama dan bisa dibandingkan berdampingan.
+ *  Diturunkan dari SCORED_TASK_IDS (bukan daftar terpisah) supaya tidak bisa
+ *  melenceng lagi; HABIT_LABEL bertipe Record<HabitId, string> jadi penjaga
+ *  compile-time — tambah task baru tanpa label = build gagal. */
+export const HABIT_IDS = SCORED_TASK_IDS
 
 export type HabitId = (typeof HABIT_IDS)[number]
 
@@ -24,6 +28,7 @@ export const HABIT_LABEL: Record<HabitId, string> = {
   latihan_done: 'Latihan',
   postur_done: 'Postur',
   makanan_clean: 'Makan bersih',
+  catatan: 'Catatan',
 }
 
 /** Senin awal minggu berjalan (weekStart), format YYYY-MM-DD. */

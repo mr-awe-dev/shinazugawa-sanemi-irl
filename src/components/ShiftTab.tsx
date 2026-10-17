@@ -40,7 +40,7 @@ export default function ShiftTab({ shifts, onChange, onSelectDate, onImport }: P
 
   return (
     <div>
-      <div className="datebar weeknav" role="group" aria-label="Pilih minggu">
+      <div className="datebar" role="group" aria-label="Pilih minggu">
         <button onClick={() => setAnchor((a) => addDays(a, -7))}>
           <span className="lbl-full">← Minggu lalu</span><span className="lbl-short">← Lalu</span>
         </button>
