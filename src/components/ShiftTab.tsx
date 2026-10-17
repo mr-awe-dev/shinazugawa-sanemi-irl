@@ -7,8 +7,10 @@ import {
   getShift,
   shiftLabel,
   type ShiftCode,
+  type ShiftRow,
 } from '../lib/shift'
 import { riseChild, staggerParent } from '../lib/anim-variants'
+import ShiftImportCard from './ShiftImportCard'
 import { IconBed, IconClock } from './icons'
 
 const DAY_NAMES = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab']
@@ -29,9 +31,10 @@ type Props = {
   shifts: Record<string, ShiftCode>
   onChange: (date: string, code: ShiftCode | null) => void
   onSelectDate: (date: string) => void
+  onImport: (rows: ShiftRow[]) => void
 }
 
-export default function ShiftTab({ shifts, onChange, onSelectDate }: Props) {
+export default function ShiftTab({ shifts, onChange, onSelectDate, onImport }: Props) {
   const [anchor, setAnchor] = useState(todayKey())
   const days = Array.from({ length: 7 }, (_, i) => addDays(anchor, i))
 
@@ -81,6 +84,8 @@ export default function ShiftTab({ shifts, onChange, onSelectDate }: Props) {
           )
         })}
       </motion.div>
+
+      <ShiftImportCard onMerge={onImport} />
 
       <div className="card wide legend">
         <div className="card-title">Legenda shift & aturan otomatis</div>

@@ -28,8 +28,26 @@ import History from './components/History'
 import MonthlyRecap from './components/MonthlyRecap'
 import WeeklyRecap from './components/WeeklyRecap'
 import { addDays, canEdit, todayKey, type DailyLog } from './lib/schema'
-import { getShift, isReminderDue, loadShifts, saveShifts, SHIFT_ADJUST, shiftLabel, type ShiftCode } from './lib/shift'
-import { fireReminder, loadNotifyPref, msUntil, saveNotifyPref } from './lib/notify'
+import {
+  getShift,
+  isReminderDue,
+  loadShifts,
+  mergeShiftRows,
+  saveShifts,
+  SHIFT_ADJUST,
+  shiftLabel,
+  type ShiftCode,
+  type ShiftRow,
+} from './lib/shift'
+import {
+  clearSnooze,
+  fireReminder,
+  loadNotifyPref,
+  msUntil,
+  saveNotifyPref,
+  scheduleSnooze,
+  stopAlarm,
+} from './lib/notify'
 import { getLog, loadAll, saveAll } from './lib/store'
 import { getProgress } from './lib/stats'
 import { loadMeta, saveMeta, type MonthMeta } from './lib/meta'
@@ -108,6 +126,19 @@ export default function App() {
     return () => { for (const t of timers) clearTimeout(t) }
   }, [notifyOn, shifts])
 
+  // Tombol aksi notifikasi (Snooze / Sudah Recall) datang dari service worker,
+  // yang tidak bisa membunyikan alarm sendiri — hanya meneruskan ke halaman ini.
+  useEffect(() => {
+    if (!('serviceWorker' in navigator)) return
+    const onMessage = (e: MessageEvent<{ type?: string; action?: string }>) => {
+      if (e.data?.type !== 'alarm-action') return
+      if (e.data.action === 'snooze') scheduleSnooze()
+      if (e.data.action === 'dismiss') { clearSnooze(); void stopAlarm() }
+    }
+    navigator.serviceWorker.addEventListener('message', onMessage)
+    return () => navigator.serviceWorker.removeEventListener('message', onMessage)
+  }, [])
+
   const log = useMemo(() => getLog(all, dateKey), [all, dateKey])
   const editable = canEdit(dateKey)
   const isToday = dateKey === todayKey()
@@ -129,6 +160,10 @@ export default function App() {
       else delete next[date]
       return next
     })
+  }
+
+  const handleShiftImport = (rows: ShiftRow[]) => {
+    setShifts((prev) => mergeShiftRows(prev, rows))
   }
 
   const setMonthMeta = (ym: string, patch: Partial<MonthMeta>) => {
@@ -177,8 +212,13 @@ export default function App() {
           </div>
         </header>
 
-        {tab !== 'shift' && (
-          <div className="datebar" role="group" aria-label="Pilih tanggal">
+        {/* Chrome per-hari hanya di tab yang punya editor harian. Di Grafik &
+            Riwayat, dateKey tidak dibaca satu pun komponen (Charts/WeeklyRecap/
+            MonthlyRecap/History semuanya derive dari todayKey()), jadi tombol
+            H-1/H+1 di sini tidak mengubah apa pun yang terlihat — kontrol yang
+            mati lebih buruk daripada kontrol yang absen. */}
+        {(tab === 'hari' || tab === 'latihan') && (
+          <div className="datebar datebar-sticky" role="group" aria-label="Pilih tanggal">
             <button onClick={() => setDateKey((k) => addDays(k, -1))} aria-label="Hari sebelumnya">
               <IconChevLeft size={16} /> H-1
             </button>
@@ -189,7 +229,7 @@ export default function App() {
             <button onClick={() => setDateKey(todayKey())} disabled={isToday}>Hari ini</button>
           </div>
         )}
-        {!editable && tab !== 'shift' && (
+        {(tab === 'hari' || tab === 'latihan') && !editable && (
           <p className="locked"><IconLock size={16} /> Terkunci — hanya hari ini + H-1 yang bisa diedit.</p>
         )}
 
@@ -235,12 +275,21 @@ export default function App() {
             </>
           )}
 
-          {tab === 'latihan' && <WorkoutTab dateKey={dateKey} shift={shift} />}
+          {tab === 'latihan' && (
+            <WorkoutTab
+              dateKey={dateKey}
+              shift={shift}
+              log={log}
+              readOnly={!editable}
+              onChange={patch}
+            />
+          )}
 
           {tab === 'shift' && (
             <ShiftTab
               shifts={shifts}
               onChange={setShift}
+              onImport={handleShiftImport}
               onSelectDate={(k) => { setDateKey(k); setTab('hari') }}
             />
           )}

@@ -9,6 +9,9 @@ export type DailyLog = {
   tidur_jam: number
   latihan_done: boolean
   latihan_menu: string
+  // Indeks item WEEKLY_MENU -> sudah dicentang. Opsional supaya log lama (tanpa
+  // field ini) tetap valid; workoutDoneCount() menganggapnya {}.
+  latihan_items?: Record<string, boolean>
   postur_done: boolean
   makanan_clean: boolean
   berat_kg?: number
@@ -108,7 +111,7 @@ export function taskDone(log: DailyLog, taskId: string): boolean {
     case 'tidur_jam':
       return log.tidur_jam >= THRESHOLD.tidur_min && log.tidur_jam <= THRESHOLD.tidur_max
     case 'latihan_done':
-      return log.latihan_done
+      return recomputeLatihanDone(log, log.date)
     case 'postur_done':
       return log.postur_done
     case 'makanan_clean':
@@ -120,7 +123,28 @@ export function taskDone(log: DailyLog, taskId: string): boolean {
   }
 }
 
-export const TOTAL_TASKS = 8
+export const SCORED_TASK_IDS = [
+  'protein_g',
+  'air_L',
+  'langkah',
+  'tidur_jam',
+  'latihan_done',
+  'postur_done',
+  'makanan_clean',
+  'catatan',
+] as const
+
+export type ScoredTaskId = (typeof SCORED_TASK_IDS)[number]
+
+/** Task yang dihitung untuk tanggal tsb. Hari istirahat latihan (WEEKLY_MENU
+ *  rest:true = Sabtu/Minggu) tidak punya sesi latihan, jadi latihan_done
+ *  dikeluarkan dari skor — denominator 7, bukan 8 — supaya istirahat tidak
+ *  dihitung sebagai usaha dan progres akhir pekan tetap bisa 100%.
+ *  BUKAN shift L: libur shift justru hari latihan UTAMA (lihat shift.ts). */
+export function scoredTaskIdsFor(dateKey: string): ScoredTaskId[] {
+  const ids: ScoredTaskId[] = [...SCORED_TASK_IDS]
+  return isRestDay(dateKey) ? ids.filter((i) => i !== 'latihan_done') : ids
+}
 
 export function emptyLog(date: string, latihan_menu = ''): DailyLog {
   return {
@@ -131,6 +155,7 @@ export function emptyLog(date: string, latihan_menu = ''): DailyLog {
     tidur_jam: 0,
     latihan_done: false,
     latihan_menu,
+    latihan_items: {},
     postur_done: false,
     makanan_clean: false,
     catatan: '',
@@ -165,8 +190,49 @@ export function canEdit(dateKey: string, nowKey = todayKey()): boolean {
   return diff <= 1
 }
 
-export function defaultMenuForDate(dateKey: string): string {
+function weekdayOf(dateKey: string): number {
   const [y, m, d] = dateKey.split('-').map(Number)
-  const day = new Date(y, m - 1, d).getDay()
-  return WEEKLY_MENU[day]?.title ?? ''
+  return new Date(y, m - 1, d).getDay()
+}
+
+export function defaultMenuForDate(dateKey: string): string {
+  return WEEKLY_MENU[weekdayOf(dateKey)]?.title ?? ''
+}
+
+/** Item latihan (bukan judul) untuk tanggal tsb — sumber checklist di tab Latihan. */
+export function workoutItemsFor(dateKey: string): string[] {
+  return WEEKLY_MENU[weekdayOf(dateKey)]?.items ?? []
+}
+
+export function isRestDay(dateKey: string): boolean {
+  return WEEKLY_MENU[weekdayOf(dateKey)]?.rest === true
+}
+
+/** Log lama (sebelum fitur checklist) tidak punya `latihan_items` sama sekali —
+ *  nilai `latihan_done` yang tersimpan dipakai sebagai gantinya, supaya progres
+ *  historis tidak anjlok turun begitu aturan mulai berlaku. Begitu field-nya ada
+ *  (termasuk `{}` dari emptyLog), aturan yang berlaku. */
+function hasChecklist(log: DailyLog): boolean {
+  return log.latihan_items !== undefined
+}
+
+/** Berapa item yang sudah dicentang (index items, bukan teks — teks bisa berubah).
+ *  Hari istirahat / menu kosong dihitung tuntas: memakai guard yang SAMA dengan
+ *  recomputeLatihanDone() supaya angka badge dan flag latihan_done tidak pernah
+ *  bertentangan (dulu hari istirahat tampil 0/1 padahal aturannya sudah true). */
+export function workoutDoneCount(log: DailyLog, dateKey: string): number {
+  const items = workoutItemsFor(dateKey)
+  if (items.length === 0 || isRestDay(dateKey)) return items.length
+  if (!hasChecklist(log)) return log.latihan_done ? items.length : 0
+  const map = log.latihan_items ?? {}
+  return items.reduce((n, _, i) => n + (map[String(i)] === true ? 1 : 0), 0)
+}
+
+/** Sumber kebenaran tunggal latihan_done (dipakai tab Latihan untuk menulis DAN tab
+ *  Hari untuk membaca). Hari istirahat latihan / menu kosong otomatis tuntas. */
+export function recomputeLatihanDone(log: DailyLog, dateKey: string): boolean {
+  const items = workoutItemsFor(dateKey)
+  if (items.length === 0 || isRestDay(dateKey)) return true
+  if (!hasChecklist(log)) return log.latihan_done
+  return workoutDoneCount(log, dateKey) === items.length
 }

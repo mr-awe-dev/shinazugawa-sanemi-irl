@@ -190,7 +190,11 @@
 }
 
 /* ---------- Datebar: mobile 2 baris (label penuh di atas, tombol 3 kolom),
-   tablet/desktop 1 baris. Tidak ada scroll horizontal yang kepotong. ---------- */
+   tablet/desktop 1 baris. Tidak ada scroll horizontal yang kepotong.
+   Dipakai ulang oleh WeeklyRecap / MonthlyRecap / History / ShiftTab — karena
+   itu aturan positioning (sticky) TIDAK boleh ditaruh di sini; pakai kelas
+   tambahan .datebar-sticky yang hanya dipasang di pemilih tanggal global
+   (App.tsx), dan hanya >=640px (blok media query di bawah). ---------- */
 .datebar {
   display: flex;
   flex-wrap: wrap;
@@ -263,6 +267,25 @@
 }
 
 @media (min-width: 640px) {
+  /* Sticky HANYA untuk pemilih tanggal global. Class .datebar dipakai ulang oleh
+     WeeklyRecap / MonthlyRecap / History / ShiftTab — kalau ikut sticky, tab Riwayat
+     punya 4 baris sticky bertumpuk di top yang sama. Karena itu selector-nya
+     .datebar-sticky, bukan .datebar.
+     top disamakan dengan padding-top .app-scene supaya menempel tepat di tepi shell
+     (menghormati notch iPhone). Latar --surface sama dengan body/shell jadi konten
+     yang lewat di bawahnya tidak kelihatan — tanpa border atau blur yang dilarang
+     neumorphism. --in-sm (inset) = "track", sesuai aturan "Inset = state ditekan /
+     input / track". z-index 10: di atas konten, di bawah dock (20). */
+  .datebar-sticky {
+    position: sticky;
+    top: calc(12px + env(safe-area-inset-top, 0px));
+    z-index: 10;
+    padding: 6px;
+    border-radius: var(--r-box);
+    background: var(--surface);
+    box-shadow: var(--in-sm);
+  }
+
   .datebar {
     flex-wrap: nowrap;
   }
@@ -1316,6 +1339,113 @@ ul li {
 
 .diag-list strong {
   color: var(--text-strong);
+}
+
+/* ---------- Alarm: bar status + form import jadwal ---------- */
+.alarm-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 10px 0;
+  padding: 12px 14px;
+  border-radius: var(--r-box);
+  background: var(--surface);
+  box-shadow: var(--in-sm);
+  font-size: 0.85rem;
+}
+
+.alarm-bar .backup-actions {
+  margin-top: 0;
+}
+
+.paste-area {
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  white-space: pre;
+  overflow-x: auto;
+  margin: 0;
+}
+
+textarea.paste-area {
+  white-space: pre-wrap;
+  min-height: 96px;
+}
+
+/* ---------- Checklist latihan di dalam card (tab Latihan) ---------- */
+.card-click {
+  cursor: pointer;
+  border-radius: var(--r-box);
+}
+
+.card-click:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.sheet {
+  overflow: hidden;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: var(--r-box);
+  background: var(--surface);
+  box-shadow: var(--in-sm);
+}
+
+.sheet-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-size: 0.85rem;
+}
+
+.done-count {
+  flex: none;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--in-sm);
+  color: var(--accent-deep);
+  font-weight: 650;
+  font-size: 0.78rem;
+}
+
+:root[data-theme='dark'] .done-count {
+  color: var(--accent-bright);
+}
+
+.item-check {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.item-check li {
+  margin-bottom: 8px;
+}
+
+.item-check .row {
+  align-items: flex-start;
+  cursor: pointer;
+}
+
+.item-check input[type='checkbox'] {
+  flex: none;
+  margin-top: 3px;
+}
+
+.item-check .item-done {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.sheet .ok-text {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0 0;
 }
 
 /* ---------- Mobile: pemilih tema merapat ke kanan (dock bawah sudah ada) ---------- */

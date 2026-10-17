@@ -1,4 +1,4 @@
-import { addDays, taskDone, toDateKey, type DailyLog } from './schema'
+import { addDays, isRestDay, taskDone, toDateKey, type DailyLog } from './schema'
 import { getProgress } from './stats'
 
 // Logika rekap mingguan (Senin–Minggu) & bulanan.
@@ -73,19 +73,30 @@ export function weekStat(all: Record<string, DailyLog>, startKey: string): WeekS
   const keys = weekRange(startKey)
   const loggedKeys = keys.filter((k) => all[k])
   const of = loggedKeys.length
+  // Denominator PER TASK: latihan_done tidak berlaku di hari istirahat latihan
+  // (Sabtu/Minggu), jadi minggu penuh menyumbang 5 hari, bukan 7.
+  const restlessKeys = loggedKeys.filter((k) => !isRestDay(k))
+  const poolFor = (id: HabitId) => (id === 'latihan_done' ? restlessKeys : loggedKeys)
   const perTask = Object.fromEntries(
-    HABIT_IDS.map((id) => [id, { done: loggedKeys.filter((k) => taskDone(all[k], id)).length, of }]),
+    HABIT_IDS.map((id) => {
+      const pool = poolFor(id)
+      return [id, { done: pool.filter((k) => taskDone(all[k], id)).length, of: pool.length }]
+    }),
   ) as WeekStat['perTask']
   const done = HABIT_IDS.reduce((a, id) => a + perTask[id].done, 0)
-  const total = of * HABIT_IDS.length
+  const total = HABIT_IDS.reduce((a, id) => a + perTask[id].of, 0)
+  // "Paling konsisten" pakai RASIO, bukan jumlah mentah — karena of per task
+  // bisa berbeda (latihan_done 5 vs task lain 7).
   let best: WeekStat['best'] = null
   for (const id of HABIT_IDS) {
-    if (!best || perTask[id].done > best.done) {
-      best = { id, label: HABIT_LABEL[id], done: perTask[id].done, of }
+    const t = perTask[id]
+    if (t.of === 0) continue
+    if (!best || t.done / t.of > best.done / best.of) {
+      best = { id, label: HABIT_LABEL[id], done: t.done, of: t.of }
     }
   }
   if (of === 0) best = null
-  return { keys, logged: of, done, total, pct: of === 0 ? null : Math.round((done / total) * 100), perTask, best }
+  return { keys, logged: of, done, total, pct: total === 0 ? null : Math.round((done / total) * 100), perTask, best }
 }
 
 export type MeasureDelta = { first: number; last: number; delta: number } | null
@@ -115,7 +126,9 @@ export function monthStat(all: Record<string, DailyLog>, ym: string): MonthStat 
   const keys = monthRange(ym)
   const loggedKeys = keys.filter((k) => all[k])
   const pcts = loggedKeys.map((k) => getProgress(all[k]).pct)
-  const latihanCount = loggedKeys.filter((k) => all[k].latihan_done).length
+  // Hari istirahat latihan tidak punya sesi latihan, jadi tidak dihitung sebagai
+  // "sesi latihan" — dihitung lewat taskDone() yang sudah aware hari istirahat.
+  const latihanCount = loggedKeys.filter((k) => taskDone(all[k], 'latihan_done') && !isRestDay(k)).length
   const monthsActive = new Set(Object.keys(all).map((k) => monthKeyOf(k))).size
   return {
     keys,

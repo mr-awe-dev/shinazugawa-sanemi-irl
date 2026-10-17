@@ -1,10 +1,13 @@
 import type { DailyLog } from './schema'
-import { TOTAL_TASKS, taskDone } from './schema'
+import { scoredTaskIdsFor, taskDone } from './schema'
 
+/** Progres harian. Denominator ikut tanggal: 8 task pada hari latihan, 7 pada
+ *  hari istirahat latihan (lihat scoredTaskIdsFor). */
 export function getProgress(log: DailyLog): { done: number; total: number; pct: number } {
-  const ids = ['protein_g', 'air_L', 'langkah', 'tidur_jam', 'latihan_done', 'postur_done', 'makanan_clean', 'catatan']
+  const ids = scoredTaskIdsFor(log.date)
   const done = ids.filter((id) => taskDone(log, id)).length
-  return { done, total: TOTAL_TASKS, pct: Math.round((done / TOTAL_TASKS) * 100) }
+  const total = ids.length
+  return { done, total, pct: total === 0 ? 0 : Math.round((done / total) * 100) }
 }
 
 export function grade(pct: number): string {

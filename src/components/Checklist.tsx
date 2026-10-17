@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { motion } from 'motion/react'
 import type { DailyLog } from '../lib/schema'
-import { taskDone } from '../lib/schema'
+import { recomputeLatihanDone, taskDone } from '../lib/schema'
 import { riseChild, staggerParent } from '../lib/anim-variants'
 import {
   IconActivity,
@@ -80,6 +80,9 @@ function NumField({
 }
 
 export default function Checklist({ log, readOnly, onChange }: Props) {
+  // Diturunkan dari aturan, bukan dari log.latihan_done yang bisa basi —
+  // di hari istirahat latihan checkbox tetap ✓ walau nilai tersimpan masih false.
+  const latihanDone = recomputeLatihanDone(log, log.date)
   return (
     <motion.div
       key={log.date}
@@ -101,11 +104,16 @@ export default function Checklist({ log, readOnly, onChange }: Props) {
         min={0} max={24} step={0.5} unit="jam" done={taskDone(log, 'tidur_jam')}
         readOnly={readOnly} onInput={(v) => onChange({ tidur_jam: Math.max(0, Math.min(24, v || 0)) })} />
 
-      <Card done={log.latihan_done} icon={<IconDumbbell />} title="Sesi Latihan" target="sesuai jadwal mingguan">
+      <Card done={latihanDone} icon={<IconDumbbell />} title="Sesi Latihan" target="otomatis dari checklist tab Latihan">
         <label className="row">
-          <input type="checkbox" checked={log.latihan_done} disabled={readOnly}
-            onChange={(e) => onChange({ latihan_done: e.target.checked })} />
-          Selesaikan sesi hari ini
+          <input
+            type="checkbox"
+            checked={latihanDone}
+            disabled
+            readOnly
+            aria-label="Status Sesi Latihan (otomatis)"
+          />
+          {latihanDone ? 'Sesi latihan tercatat selesai' : 'Belum selesai — isi checklist di tab Latihan'}
         </label>
         <input className="text" type="text" value={log.latihan_menu} disabled={readOnly}
           placeholder="cth: Hari 1: Upper Pull & Grip" aria-label="Menu latihan"

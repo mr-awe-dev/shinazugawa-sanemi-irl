@@ -1,4 +1,5 @@
 import type { DailyLog } from './schema'
+import { recomputeLatihanDone } from './schema'
 import type { ShiftCode } from './shift'
 import type { MonthMeta } from './meta'
 
@@ -81,7 +82,7 @@ export function exportCSV(
     lines.push(
       [
         k, l.protein_g, l.air_L, l.langkah, l.tidur_jam,
-        l.latihan_done ? 1 : 0, l.latihan_menu ?? '',
+        recomputeLatihanDone(l, k) ? 1 : 0, l.latihan_menu ?? '',
         l.postur_done ? 1 : 0, l.makanan_clean ? 1 : 0,
         l.berat_kg ?? '', l.pinggang_cm ?? '', shifts[k] ?? '', l.catatan ?? '',
       ].map(csvCell).join(','),
