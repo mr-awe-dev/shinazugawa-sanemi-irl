@@ -136,7 +136,7 @@ function Delta({ cur, prev, m }: { cur: number | null; prev: number | null; m: P
   const cls = d > 0 ? 'up' : d < 0 ? 'down' : 'neutral'
   const word = d > 0 ? 'naik' : d < 0 ? 'turun' : 'stabil'
   return (
-    <span className={`delta ${cls}`} aria-label={`${word} ${mag} dibanding periode sebelumnya`}>
+    <span className={`delta ${cls}`} role="img" aria-label={`${word} ${mag} dibanding periode sebelumnya`}>
       {sign}{m.decimals === 0 ? fmtID(Math.round(Math.abs(d))) : mag}{m.unit ? ` ${m.unit}` : ''} vs lalu
     </span>
   )

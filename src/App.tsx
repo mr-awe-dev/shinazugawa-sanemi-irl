@@ -219,11 +219,11 @@ export default function App() {
             mati lebih buruk daripada kontrol yang absen. */}
         {(tab === 'hari' || tab === 'latihan') && (
           <div className="datebar datebar-sticky" role="group" aria-label="Pilih tanggal">
-            <button onClick={() => setDateKey((k) => addDays(k, -1))} aria-label="Hari sebelumnya">
+            <button onClick={() => setDateKey((k) => addDays(k, -1))} aria-label="H-1, hari sebelumnya">
               <IconChevLeft size={16} /> H-1
             </button>
             <strong>{dateKey} {isToday ? '(hari ini)' : ''}</strong>
-            <button disabled={dateKey >= todayKey()} onClick={() => setDateKey((k) => addDays(k, 1))} aria-label="Hari berikutnya">
+            <button disabled={dateKey >= todayKey()} onClick={() => setDateKey((k) => addDays(k, 1))} aria-label="H+1, hari berikutnya">
               H+1 <IconChevRight size={16} />
             </button>
             <button onClick={() => setDateKey(todayKey())} disabled={isToday}>Hari ini</button>

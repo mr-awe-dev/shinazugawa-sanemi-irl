@@ -68,7 +68,7 @@ export default function ShiftImportCard({ onMerge }: Props) {
         </div>
       </div>
 
-      <pre className="paste-area" aria-label="Contoh format">{SHIFT_TABLE_SAMPLE}</pre>
+      <pre className="paste-area" role="group" aria-label="Contoh format">{SHIFT_TABLE_SAMPLE}</pre>
 
       <div className="backup-actions">
         <button className="btn-primary" onClick={pickFile} disabled={busy}>

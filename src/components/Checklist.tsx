@@ -44,7 +44,7 @@ function Card({
           <div className="card-title">{title}</div>
           <div className="card-target">Target: {target}</div>
         </div>
-        <span className="status-dot" aria-label={done ? 'Selesai' : 'Belum selesai'}>
+        <span className="status-dot" role="img" aria-label={done ? 'Selesai' : 'Belum selesai'}>
           <IconCheck size={16} />
         </span>
       </div>
